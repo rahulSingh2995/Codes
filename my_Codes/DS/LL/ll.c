@@ -1,34 +1,14 @@
-// Iterative C program to reverse a linked list 
 #include <stdio.h> 
 #include <stdlib.h> 
 
-/* Link list node */
 struct Node { 
 	int data; 
 	struct Node* next; 
 }; 
 
-/* Function to reverse the linked list */
-static void reverse(struct Node** head_ref) 
-{ 
-	struct Node* prev = NULL; 
-	struct Node* current = *head_ref; 
-	struct Node* next = NULL; 
-	while (current != NULL) { 
-		// Store next 
-		next = current->next; 
-
-		// Reverse current node's pointer 
-		current->next = prev; 
-
-		// Move pointers one position ahead. 
-		prev = current; 
-		current = next; 
-	} 
-	*head_ref = prev; 
-} 
-
-/* Function to push a node */
+/**
+ * pushes at start
+ */
 void push(struct Node** head_ref, int new_data) 
 { 
 	struct Node* new_node = (struct Node*)malloc(sizeof(struct Node)); 
@@ -37,7 +17,30 @@ void push(struct Node** head_ref, int new_data)
 	(*head_ref) = new_node; 
 } 
 
-/* Function to print linked list */
+/**
+ * pushes at end
+ */
+void push_back(struct Node ** head, int data)
+{
+	if(*head==NULL)
+	{
+		struct Node* new_node = (struct Node*)malloc(sizeof(struct Node)); 
+		new_node->data = data;
+		new_node->next=NULL;
+		*head=new_node; 
+		return;
+	}
+
+	struct Node* new_node = (struct Node*)malloc(sizeof(struct Node)); 
+	new_node->data = data;
+	new_node->next=NULL; 
+	struct Node* temp=*head;
+	while(temp->next!=NULL)
+		temp=temp->next;
+
+	temp->next=new_node;
+}
+
 void printList(struct Node* head) 
 { 
 	struct Node* temp = head; 
@@ -47,22 +50,89 @@ void printList(struct Node* head)
 	} 
 } 
 
-/* Driver program to test above function*/
+struct Node* mergeTwoSortedLL(struct Node* Head1,struct Node* Head2)
+{
+	struct Node dummy;
+	struct Node* tail=&dummy;
+	struct Node* res=NULL;
+	tail->next=NULL;
+	
+	if(!Head1)
+	{
+		tail->next=Head2;
+		return tail->next;
+	}
+
+	if(!Head2)
+	{
+		tail->next=Head1;
+		return tail->next;
+	}
+
+	while(Head1 && Head2)
+	{
+		if(Head1->data <= Head2->data)
+		{
+			tail->next=Head1;	/// add the node to tail
+			Head1=Head1->next;	/// forward the Head1
+			tail=tail->next;	/// forward the tail
+			tail->next=NULL;	/// cut the connection from the Head1
+		}
+		else
+		{
+			tail->next=Head2;
+			Head2=Head2->next;
+			tail=tail->next;
+			tail->next=NULL;
+		}
+	}
+
+	while(Head1)
+	{
+		tail->next=Head1;
+		Head1=Head1->next;
+		tail=tail->next;
+	}
+
+	while(Head2)
+	{
+		tail->next=Head2;
+		Head2=Head2->next;
+		tail=tail->next;
+	}
+
+	return dummy.next;
+}
+
 int main() 
 { 
-	/* Start with the empty list */
-	struct Node* head = NULL; 
+	struct Node* head1 = NULL; 
+	struct Node* head2 = NULL; 
+	struct Node* head3 = NULL; 
 
-	push(&head, 20); 
-	push(&head, 4); 
-	push(&head, 15); 
-	push(&head, 85); 
+	push_back(&head1, 4); 
+	push_back(&head1, 8); 
+	push_back(&head1, 17); 
+	push_back(&head1, 30); 
+	printf("Given linked list-1\n"); 
+	printList(head1); 
+	printf("\n");
 
-	printf("Given linked list\n"); 
-	printList(head); 
-	reverse(&head); 
-	printf("\nReversed Linked list \n"); 
-	printList(head); 
-	getchar(); 
+	push_back(&head2, 6); 
+	push_back(&head2, 14); 
+	push_back(&head2, 17); 
+	push_back(&head2, 19); 
+	push_back(&head2, 22); 
+	push_back(&head2, 28); 
+	push_back(&head2, 35); 
+	printf("Given linked list-2\n"); 
+	printList(head2); 
+	printf("\n");
+
+	head3=mergeTwoSortedLL(head1,head2);
+	printf("Merged LL-\n"); 
+	printList(head3); 
+	printf("\n");
+	
 } 
 
